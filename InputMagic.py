@@ -44,5 +44,11 @@ for company in data['companies']:
     company_arr.append(company['company'])
     clean_articles.append(ca)
 
-print(clean_articles)
 # Gensim model
+
+
+model = Doc2Vec(min_count=1, window=10, size=100, sample=1e-4, negative=5, workers=8)
+model.build_vocab(sentences.to_array())
+
+for epoch in range(10):
+    model.train(sentences.sentences_perm())
