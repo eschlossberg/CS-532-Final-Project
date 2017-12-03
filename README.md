@@ -9,8 +9,8 @@
 
 3.	Better efficiency than “Bags of words” approach
 4.	[“Paragraph Vector”](https://arxiv.org/pdf/1405.4053.pdf) –
-  -	Learned from unlabeled data – solves insufficient labeled data
-  - Inherit semantics of the words
-  -	Word order is considered –
-	- The word vectors are averaged or concatenated to form document vector - to predict the next word in a context.
-  - cosine-similarity between examples are likely to be a useful measure of similarity.
+    -	Learned from unlabeled data – solves insufficient labeled data
+    - Inherit semantics of the words
+    -	Word order is considered –
+	  - The word vectors are averaged or concatenated to form document vector - to predict the next word in a context.
+    - cosine-similarity between examples are likely to be a useful measure of similarity.
