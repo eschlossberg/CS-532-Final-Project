@@ -46,47 +46,46 @@ for company in data['companies']:
 
 # Copied code, for testing
 class LabeledLineSentence(object):
+    # sources: a dictionary that has the following format: 'fileName' : 'tag'
     def __init__(self, sources):
         self.sources = sources
 
-        flipped = {}
+        keyChecker = {}
 
         # make sure that keys are unique
         for key, value in sources.items():
-            if value not in flipped:
-                flipped[value] = [key]
+            if value not in keyChecker:
+                keyChecker[value] = [key]
             else:
                 raise Exception('Non-unique keys detected')
 
+    # Every line has a tag, format: {tag}_{i}
     def __iter__(self):
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as fin:
-                for item_no, line in enumerate(fin):
-                    yield LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % item_no])
+            with utils.smart_open(source) as doc:
+                for i, line in enumerate(doc):
+                    yield LabeledSentence( utils.to_unicode(line).split(), [prefix + '_%s' % i])
 
     def to_array(self):
         self.sentences = []
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as fin:
-                for item_no, line in enumerate(fin):
-                    self.sentences.append(LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % item_no]))
+            with utils.smart_open(source) as doc:
+                for i, line in enumerate(doc):
+                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % i]))
         return self.sentences
 
     def shuffle(self):
         shuffle(self.sentences)
         return self.sentences
 
-# Gensim model
+# Doc2Vec model
 def generate_doc2vec_model(doc, lang_tag):
     doc = LabeledLineSentence(sources)
     for line in doc:
         print(line) #Debug
-    model = d2v(doc, size=300, window=10, min_count=1, workers=8)
-    model.save('model.'+lang_tag)
-
-
-model = Doc2Vec(min_count=1, window=10, size=100, sample=1e-4, negative=5, workers=8)
-model.build_vocab(sentences.to_array())
-
-for epoch in range(10):
-    model.train(sentences.sentences_perm())
+    # size: 100
+    model = d2v(doc, size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
+    model.build_vocab(sentences.to_array())
+    for epoch in range(10):
+        model.train(sentences.shuffle())
+    model.save('model-'+lang_tag+'.d2v')
