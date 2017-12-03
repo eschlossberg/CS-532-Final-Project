@@ -1,11 +1,14 @@
 # gensim modules
 from gensim import utils
 from gensim.models.doc2vec import LabeledSentence
-import gensim.models.doc2vec as d2v
+from gensim.models.doc2vec import Doc2Vec as d2v
 
 # numpy, etc
 import numpy
 import json
+
+# random
+from random import shuffle as sf
 
 # For Debug purpose
 from pprint import pprint
@@ -47,20 +50,21 @@ class LabeledLineSentence(object):
         return self.sentences
 
     def shuffle(self):
-        shuffle(self.sentences)
+        sf(self.sentences)
         return self.sentences
 
 # Doc2Vec model
-def generate_doc2vec_model(sources, lang_tag):
+def generate_doc2vec_model(sources, name, lang_tag):
     doc = LabeledLineSentence(sources)
     for line in doc:
         print(line) #Debug
     # size: 100
-    model = d2v(doc, size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
+    # min_alpha = 0.025
+    model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
     model.build_vocab(doc.to_array())
     for epoch in range(10):
-        model.train(doc.shuffle())
-    model.save('model-'+lang_tag+'.d2v')
+        model.train(doc.shuffle(),total_examples=model.corpus_count, epochs=model.iter)
+    model.save(name+'-model-'+lang_tag+'.d2v')
 
 ## Execution
 # Cleaning the datas
@@ -141,7 +145,7 @@ os.chdir('..')
 modals_path = "trained_modals"
 
 # Adding gitignore to this path
-f = open(".gitignore", "w+")
+f = open(".gitignore", "a")
 f.write("%s/" % modals_path)
 f.write("\n")
 f.close()
@@ -171,8 +175,13 @@ for root, dirs, files in os.walk(top):
             for filename in files:
                 print("File: %s"%filename)
                 article_name_tag = d + "_%d" % count
-                sources[filename] = article_name_tag
+                article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
+                sources[article_file_location] = article_name_tag
                 count += 1
         # Then, get the files and put into sources
-        generate_doc2vec_model(sources, "en")
+        generate_doc2vec_model(sources, d, "en")
     break
+
+
+# To load:
+# model_loaded = d2v.load('/tmp/my_model.d2v')
