@@ -146,6 +146,9 @@ f.write("%s/" % modals_path)
 f.write("\n")
 f.close()
 
+print(os.getcwd()+'/cleaned_articles')
+top = os.getcwd()+'/cleaned_articles'
+
 try:
     os.makedirs(modals_path)
 except OSError:
@@ -155,4 +158,21 @@ except OSError:
 os.chdir(modals_path)
 
 ## get articles and put into doc2vec
-generate_doc2vec_model(sources, "en")
+
+for root, dirs, files in os.walk(top):
+    for d in dirs:
+        print("Now we are at: ")
+        print(d)
+        # Iterating companies in /cleaned_articles/
+        sources = {}
+        count = 1
+        cwd = top + "/%s" % d
+        for root, dirs, files in os.walk(cwd):
+            for filename in files:
+                print("File: %s"%filename)
+                article_name_tag = d + "_%d" % count
+                sources[filename] = article_name_tag
+                count += 1
+        # Then, get the files and put into sources
+        generate_doc2vec_model(sources, "en")
+    break
