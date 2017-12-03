@@ -51,15 +51,15 @@ class LabeledLineSentence(object):
         return self.sentences
 
 # Doc2Vec model
-def generate_doc2vec_model(doc, lang_tag):
+def generate_doc2vec_model(sources, lang_tag):
     doc = LabeledLineSentence(sources)
     for line in doc:
         print(line) #Debug
     # size: 100
     model = d2v(doc, size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
-    model.build_vocab(sentences.to_array())
+    model.build_vocab(doc.to_array())
     for epoch in range(10):
-        model.train(sentences.shuffle())
+        model.train(doc.shuffle())
     model.save('model-'+lang_tag+'.d2v')
 
 ## Execution
@@ -76,6 +76,7 @@ company_arr = []
 #  |---Sentences
 clean_articles = []
 
+## Section 1: Preprocessing Articles
 # make a directory for processed CleanArticles
 total_articles_path = "cleaned_articles"
 
@@ -133,3 +134,25 @@ for company in data['companies']:
     # Debug: Make a memory copy of all collections
     company_arr.append(company['company'])
     clean_articles.append(ca)
+
+## Section 2: Doc2Vec training model
+os.chdir('..')
+
+modals_path = "trained_modals"
+
+# Adding gitignore to this path
+f = open(".gitignore", "w+")
+f.write("%s/" % modals_path)
+f.write("\n")
+f.close()
+
+try:
+    os.makedirs(modals_path)
+except OSError:
+    # Prevent race condition
+    if not os.path.isdir(modals_path):
+        raise
+os.chdir(modals_path)
+
+## get articles and put into doc2vec
+generate_doc2vec_model(sources, "en")
