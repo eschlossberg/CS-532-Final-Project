@@ -1,0 +1,37 @@
+accenture has launched a specialized practice within its financial services group to help institutions implement blockchain technology in order to improve operational efficiency security and client service as well as to capture new revenue opportunities
+ accenture will provide a range of consulting and technology services from feasibility studies business case assessments and operating model design to advisory services on systems architecture cybersecurity and cloud consulting through to full scale systems integration
+ accenture a fortune global 500 company is the world s largest consulting firm as measured by revenues
+ the company employs approximately 373 000 people serving clients in more than 120 countries
+ in december 2015 accenture s clients included 94 of the fortune global 100 and more than 80 percent of the fortune global 500
+ the prestige of accenture and its leadership in the top corporate consulting space is likely to significantly boost blockchain based fintech
+ blockchain and distributed ledger technologies enable the financial industry to move away from reconciliation based processes that are expensive and inefficient said david treat managing director and global head of accenture s capital markets blockchain practice
+ our new practice which builds on the strong growth of our global capital markets business can help clients move from concept to production in the shortest possible time improving efficiency and unlocking new revenue streams
+ the accenture press release notes that according to the firm aite group investment in new blockchain enabled financial technologies will more than quintuple over the next four years from an estimated 75 million in 2015 to 400 million by 2019
+ in june 2015 santander innoventures the 100 million fintech venture capital fund of santander group oliver wyman and anthemis group published a paper titled the fintech 2
+0 paper rebooting financial services
+ the paper noted that international payments remain slow and expensive and significant savings can be made by banks and end users bypassing existing international payment networks and suggested that distributed ledger technology could reduce banks infrastructure costs attributable to cross border payments securities trading and regulatory compliance by between 15 billion and 20 billion per annum by 2022
+ accenture has also formed an alliance with digital asset holdings to help institutions assess and implement block chain related solutions
+ the two companies will collaborate on innovative solutions for banks brokerages and infrastructure providers that accenture will implement as a preferred systems integrator
+ a digital asset holdings press release notes that besides accenture the company is forming partnerships with broadridge and pricewaterhousecoopers pwc 
+ accenture is a renowned leader in large scale systems transformation and the development of complex technology infrastructure said blythe masters ceo of digital asset holdings
+ working together we can dramatically accelerate the adoption of blockchain technology globally
+ our products and software combined with accenture s expertise at integrating new technologies with existing systems will help institutions reduce settlement latency risk operating costs and capital requirements
+ accenture and digital asset holdings are key members of the hyperledger project a high profile initiative spearheaded by the linux foundation which wants to develop develop a new open source blockchain separated from the bitcoin blockchain
+ the development of blockchain technology has the potential to redefine the operations and economics of the financial services industry said richard lumb chief executive of accenture s financial services
+ accenture and digital asset holdings support closed permissioned blockchains that would offer the advantages of digital currencies fast and cheap transactions permanently recorded in a shared distributed ledger without the troublesome openness of the bitcoin network where anyone can be a node on the network anonymously
+ instead of anonymous miners only banks and vetted financial operators would be allowed to validate transactions in permissioned blockchains
+ to be used by financial institutions including capital markets firms and insurers blockchains must supplant the costly methods introduced by bitcoin with a mechanism that guarantees security privacy and speed without paying for anonymous consensus said two accenture executives in july
+ with private chains you can have a completely known universe of transaction processors digital asset holdings ceo blythe masters said in september
+ that appeals to financial institutions that are wary of the bitcoin blockchain
+ other experts including legendary cryptographer nick szabo strongly argued that financial operators should instead embrace the crowd sourced power and resiliency of permissionless blockchains like bitcoin
+ bitcoin magazine reached out to treat to find out more about accenture s position in the permissionless vs
+ permissioned blockchain debate
+ permissionless blockchain solutions were driven by the desire to transfer value whether cryptocurrency or other digital assets without the need for a trusted third party treat told bitcoin magazine
+ that has tremendous power but also distinct limits in terms of use cases and scalability
+ permissioned blockchain solutions tip the dynamic towards groups of known actors who can message transfer and validate transactions in a number of ways with the necessary controls e
+g
+ aml kyc 
+ they are less constrained by latency and scalability challenges which opens a multitude of opportunities for financial institutions to remove inefficiencies
+ permissioned based solutions enable faster and more scalable consensus mechanisms because the nodes are controlled by known chosen actors added treat
+ in a permissioned environment the ledger can be engineered along a much wider array of consensus mechanisms including multi signature practical byzantine fault tolerant proof of stake zero knowledge proof etc
+ 

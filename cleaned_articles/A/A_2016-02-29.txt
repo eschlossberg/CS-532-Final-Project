@@ -1,0 +1,27 @@
+san francisco business wire accenture nyse acn today announced the launch of the accenture cyber intelligence platform a new addition to accenture s managed security offerings
+ the accenture cyber intelligence platform marries advances in chip processor technology with a proprietary combination of artificial intelligence machine learning and streaming analytics to help organizations identify never before seen network born cyber threats in near real time
+ the platform examines network flows and dns data streamed from existing network components to learn determine and report ranked suspicious behaviors attributable to malicious cyber attack techniques
+ today s best network protection devices alone are not enough to challenge the new reality of cybersecurity tweet this the accenture cyber intelligence platform is the first to harness accenture s quick to deploy scalable technologies and new high performance big data processing power giving organizations an unprecedented level of flexibility
+ underpinned by accenture s as a service capabilities and the accenture cloud platform it can typically be implemented within one week
+ once enabled the accenture cyber intelligence platform automatically begins to learn what s normal and then continuously improves
+ organizations can easily scale the service as needed while also benefiting from the industry experience of accenture s broader managed security service professionals who not only run the platform but also are available to analyze interpret and respond to security alerts
+ the platform features a highly customized version of open network insight an open source solution that delivers visibility into operational and security threats facing dynamic data centers and cloudera s enterprise data hub
+ in benchmark testing the platform proved to deliver up to a 10 fold increase in processing speed versus market alternatives
+ today s best network protection devices alone are not enough to challenge the new reality of cybersecurity said vikram desai managing director accenture analytics security lead
+ attackers continue to evolve by leveraging data technology and clients have urged us as the leading provider of data science solutions to help them fight back
+ our new accenture cyber intelligence platform gives them back the upper hand
+ according to idc analyst christina richmond program director of security services accenture s new platform introduces an important advance in which companies can now leverage network telemetry data that they already own to rapidly identify cyber criminals based upon their behavior versus traditional filters or patterns
+ to maintain business resiliency in today s constant state of security emergency businesses need the highest level of offensive threat visibility and detection and defensive incident investigation and remediation said richmond
+ it is vastly preferable to share or leverage threat data from multiple industry players in order to gain broader insight into heretofore unknown cyber security threats
+ the collection and correlation of this data is what idc calls iterative intelligence
+ with this new offering accenture has created a platform into which a company leverages its network flow and dns data to draw strong conclusions which can be shared with a broader ecosystem of experts who can work to help companies strengthen their defense capabilities and empower their businesses to move from proactive to predictive threat detection
+ this is the very nature of iterative intelligence
+ the accenture cyber intelligence platform expands accenture s end to end portfolio of cyber defense services which include strategy transformation managed security services automated threat intelligence monitoring advanced analytics and real world adversary simulations as well as incident response and remediation
+ it represents another step forward in accenture s platform driven intelligence based strategy to accelerate its client s journeys to an as a service business model
+ about accenture accenture is a leading global professional services company providing a broad range of services and solutions in strategy consulting digital technology and operations
+ combining unmatched experience and specialized skills across more than 40 industries and all business functions underpinned by the world s largest delivery network accenture works at the intersection of business and technology to help clients improve their performance and create sustainable value for their stakeholders
+ with approximately 373 000 people serving clients in more than 120 countries accenture drives innovation to improve the way the world works and lives
+ visit us at www
+accenture
+com
+ 

@@ -1,7 +1,7 @@
 # gensim modules
 from gensim import utils
 from gensim.models.doc2vec import LabeledSentence
-from gensim.models.doc2vec import d2v
+import gensim.models.doc2vec as d2v
 
 # numpy, etc
 import numpy
@@ -13,36 +13,8 @@ from pprint import pprint
 # For cleaning texts
 import re
 
-## Cleaning the datas
-data = json.load(open('companies.json'))
-
-print(len(data['companies']))
-
-# Company - CleanArticles pair
-company_arr = []
-# Clean_articles group format:
-#  - Company
-#  |-- Article
-#  |---Sentences
-clean_articles = []
-
-for company in data['companies']:
-    print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
-    ca = []
-    for article in company['articles']:
-        raws = re.split('[.]', article['text'])
-        sentences = []
-        for raw in raws:
-            if not raw:
-                continue
-            cleanRaw = re.sub('\W+', ' ', raw)
-            if not cleanRaw:
-                continue
-            sentences.append(cleanRaw.lower())
-        print(sentences)
-        ca.append(sentences)
-    company_arr.append(company['company'])
-    clean_articles.append(ca)
+# For directory
+import os
 
 # Copied code, for testing
 class LabeledLineSentence(object):
@@ -89,3 +61,73 @@ def generate_doc2vec_model(doc, lang_tag):
     for epoch in range(10):
         model.train(sentences.shuffle())
     model.save('model-'+lang_tag+'.d2v')
+
+## Execution
+# Cleaning the datas
+data = json.load(open('companies.json'))
+
+print(len(data['companies']))
+
+# Company - CleanArticles pair
+company_arr = []
+# Clean_articles group format:
+#  - Company
+#  |-- Article
+#  |---Sentences
+clean_articles = []
+
+# make a directory for processed CleanArticles
+total_articles_path = "cleaned_articles"
+
+# Adding gitignore to this path
+f = open(".gitignore", "w+")
+f.write("_%s/" % total_articles_path)
+f.write("\n")
+f.close()
+
+try:
+    os.makedirs(total_articles_path)
+except OSError:
+    # Prevent race condition
+    if not os.path.isdir(total_articles_path):
+        raise
+os.chdir(total_articles_path)
+
+
+
+for company in data['companies']:
+    print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
+    ca = []
+    for article in company['articles']:
+        raws = re.split('[.]', article['text'])
+        sentences = []
+        for raw in raws:
+            if not raw:
+                continue
+            cleanRaw = re.sub('\W+', ' ', raw)
+            if not cleanRaw:
+                continue
+            sentences.append(cleanRaw.lower())
+        print(sentences)
+        ca.append(sentences)
+
+        # Save to file
+        # Check path
+        # Python 2.7 +
+        path = company['company']
+        try:
+            os.makedirs(path)
+        except OSError:
+            # Prevent race condition
+            if not os.path.isdir(path):
+                raise
+
+        f = open("./{}/{}_{}.txt".format(path,path, article['date']), "w+")
+        for s in sentences:
+            f.write(s)
+            f.write("\n")
+        f.close()
+
+    # Debug: Make a memory copy of all collections
+    company_arr.append(company['company'])
+    clean_articles.append(ca)
