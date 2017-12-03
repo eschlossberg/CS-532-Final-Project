@@ -93,8 +93,6 @@ except OSError:
         raise
 os.chdir(total_articles_path)
 
-
-
 for company in data['companies']:
     print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
     ca = []
@@ -107,6 +105,10 @@ for company in data['companies']:
             cleanRaw = re.sub('\W+', ' ', raw)
             if not cleanRaw:
                 continue
+            # cleaning up additional space
+            if cleanRaw[0] == " ":
+                cleanRaw = cleanRaw[1:len(cleanRaw)]
+
             sentences.append(cleanRaw.lower())
         print(sentences)
         ca.append(sentences)
