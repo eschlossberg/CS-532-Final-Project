@@ -16,10 +16,20 @@ import re
 ## Cleaning the datas
 data = json.load(open('companies.json'))
 
-pprint(data)
+print(len(data['companies']))
+
+# Company - CleanArticles pair
+company_arr = []
+clean_articles = []
 
 for company in data['companies']:
-    print("Cleaned string:")
+    print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
+    ca = []
     for article in company['articles']:
         cleanString = re.sub('\W+', ' ', article['text'])
-        print(cleanString)
+        ca.append(cleanString)
+
+    company_arr.append(company['company'])
+    clean_articles.append(ca)
+
+# Gensim model
