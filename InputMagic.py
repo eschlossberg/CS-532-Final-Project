@@ -81,7 +81,7 @@ total_articles_path = "cleaned_articles"
 
 # Adding gitignore to this path
 f = open(".gitignore", "w+")
-f.write("_%s/" % total_articles_path)
+f.write("%s/" % total_articles_path)
 f.write("\n")
 f.close()
 
