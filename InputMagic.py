@@ -62,8 +62,20 @@ def generate_doc2vec_model(sources, name, lang_tag):
     # min_alpha = 0.025
     model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
     model.build_vocab(doc.to_array())
-    for epoch in range(10):
+
+    alpha_val = 0.025        # Initial learning rate
+    min_alpha_val = 1e-4     # Minimum for linear learning rate decay
+    passes = 15              # Number of passes of one document during training
+
+    alpha_delta = (alpha_val - min_alpha_val) / (passes - 1)
+
+    for epoch in range(passes):
+        model.alpha, model.min_alpha = alpha_val, alpha_val
         model.train(doc.shuffle(),total_examples=model.corpus_count, epochs=model.iter)
+        # Logs
+        print('Completed pass %i at alpha %f' % (epoch + 1, alpha_val))
+        # Next run alpha
+        alpha_val -= alpha_delta
     model.save(name+'-model-'+lang_tag+'.d2v')
 
 ## Execution
