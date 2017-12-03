@@ -1,5 +1,11 @@
 # CS-532-Final-Project
 
+## Milestone checker
+
+- [ ] Information on Doc2Vec's mathematical magic
+- [ ] Implementation Doc2Vec's algorithm for this project
+- [ ] Pegasos implementation 
+
 ## [The Magic behind Doc2Vec](https://www.quora.com/How-does-doc2vec-represent-feature-vector-of-a-document-Can-anyone-explain-mathematically-how-the-process-is-done/answer/Piyush-Bhardwaj-7)
 
 1.	An unsupervised training algorithm – “Paragraph Vectors” algorithm – to create a numeric representation of a document
