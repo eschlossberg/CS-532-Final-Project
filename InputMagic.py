@@ -18,6 +18,7 @@ import re
 
 # For directory
 import os
+from os.path import basename
 
 # Copied code, for testing
 class LabeledLineSentence(object):
@@ -37,16 +38,16 @@ class LabeledLineSentence(object):
     # Every line has a tag, format: {tag}_{i}
     def __iter__(self):
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as doc:
+            with utils.smart_open(prefix) as doc:
                 for i, line in enumerate(doc):
-                    yield LabeledSentence( utils.to_unicode(line).split(), [prefix + '_%s' % i])
+                    yield LabeledSentence( utils.to_unicode(line).split(), [source + '_%s' % i])
 
     def to_array(self):
         self.sentences = []
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as doc:
+            with utils.smart_open(prefix) as doc:
                 for i, line in enumerate(doc):
-                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % i]))
+                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [source + '_%s' % i]))
         return self.sentences
 
     def shuffle(self):
@@ -177,17 +178,20 @@ os.chdir(modals_path)
 for root, dirs, files in os.walk(top):
     for d in dirs:
         # Iterating companies in /cleaned_articles/
-        sources = {}
-        count = 1
         cwd = top + "/%s" % d
+        print("CWD is %s" % cwd)
         for root, dirs, files in os.walk(cwd):
             for filename in files:
-                article_name_tag = d + "_%d" % count
-                article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
-                sources[article_file_location] = article_name_tag
-                count += 1
-        # Then, get the files and put into sources
-        generate_doc2vec_model(sources, d, "en")
+                if filename.endswith('.txt'):
+                    sources = {}
+                    article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
+                    article_name_tag = os.path.splitext(filename)[0]
+                    sources[article_name_tag] = article_file_location
+                    print(article_name_tag)
+                    # Then, get the files and put into sources
+
+                    generate_doc2vec_model(sources, article_name_tag, "en")
+
     break
 
 
