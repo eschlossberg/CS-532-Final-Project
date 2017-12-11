@@ -38,16 +38,24 @@ class LabeledLineSentence(object):
     def __iter__(self):
         for source, prefix in self.sources.items():
             with utils.smart_open(prefix) as doc:
+                self.sentences = []
                 for i, line in enumerate(doc):
-                    yield LabeledSentence( utils.to_unicode(line).split(), [source + '_%s' % i])
+                    self.sentences.append(utils.to_unicode(line).split())
+                yield LabeledSentence(self.sentences, [source])
 
     def to_array(self):
-        self.sentences = []
+        self.docs = []
         for source, prefix in self.sources.items():
             with utils.smart_open(prefix) as doc:
+                self.sentences = []
                 for i, line in enumerate(doc):
-                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [source + '_%s' % i]))
-        return self.sentences
+                    print(line)
+                    self.sentences.append(utils.to_unicode(line).split())
+                self.docs.append(LabeledSentence(self.sentences, [source]))
+
+        for i in self.docs:
+            print(i)
+        return self.docs
 
     def shuffle(self):
         sf(self.sentences)
@@ -77,7 +85,7 @@ def generate_doc2vec_model(sources, name, lang_tag):
         alpha_val -= alpha_delta
     model.save(name+'-model-'+lang_tag+'.d2v')
     print("Models")
-    print(model.most_similar("Up"))
+    print(model.wv.vocab.keys())
 
 ## Execution
 # Cleaning the datas
@@ -143,7 +151,7 @@ for company in data['companies']:
         f = open("./{}/{}_{}.txt".format(path,path, article['date']), "w+")
         for s in sentences:
             f.write(s)
-            f.write("\n")
+            f.write(" ")
         f.close()
 
     # Debug: Make a memory copy of all collections
@@ -175,6 +183,7 @@ os.chdir(modals_path)
 ## get articles and put into doc2vec
 
 for root, dirs, files in os.walk(top):
+    sources = {}
     for d in dirs:
         # Iterating companies in /cleaned_articles/
         cwd = top + "/%s" % d
@@ -182,14 +191,14 @@ for root, dirs, files in os.walk(top):
         for root, dirs, files in os.walk(cwd):
             for filename in files:
                 if filename.endswith('.txt'):
-                    sources = {}
+
                     article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
                     article_name_tag = os.path.splitext(filename)[0]
                     sources[article_name_tag] = article_file_location
                     print(article_name_tag)
                     # Then, get the files and put into sources
 
-                    generate_doc2vec_model(sources, article_name_tag, "en")
+    generate_doc2vec_model(sources, article_name_tag, "en")
 
     break
 
