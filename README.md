@@ -14,8 +14,9 @@ At the end of training, this document vector intends to represent the concept of
 
 The purpose of using doc2vec in this project is to convert the document into vector representation, where this document vector will be used to feed our self-implemented prediction models.
 
-
 [Link to this document](https://towardsdatascience.com/a-gentle-introduction-to-doc2vec-db3e8c0cce5e)
+
+### Some extra info
 
 1.	An unsupervised training algorithm – “Paragraph Vectors” algorithm – to create a numeric representation of a document
 2.	Intention: encode whole document that consist lists of grouped sentences and associate with label
