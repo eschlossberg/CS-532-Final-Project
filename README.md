@@ -14,9 +14,9 @@ The goal of doc2vec is to create a vector representation of a document. Doc2vec 
 
   this model is a 3 layer neural network, where the input is surrounding words and the model will output predicted target word) and added a small extension - another document vector.
 
-    ![alt text](./pics/d2v.png)
-    
-  The Doc2Vec algorithm will train both word vectors and the extra document vector at the same time, and then, the vectors are averaged or concatenated to form a vector representation of the document.
+![alt text](./pics/d2v.png)
+
+The Doc2Vec algorithm will train both word vectors and the extra document vector at the same time, and then, the vectors are averaged or concatenated to form a vector representation of the document.
 
 At the end of training, this document vector intends to represent the concept of this document. As each text example will have a vector,  the cosine-similarity between these examples are likely to be a useful measure of similarity.
 
