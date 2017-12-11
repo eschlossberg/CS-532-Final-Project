@@ -87,7 +87,8 @@ def generate_doc2vec_model(sources, name, lang_tag):
     print(model.wv.vocab.keys())
     print(len(model.docvecs))
     for i in model.docvecs:
-        print("In docvec")
+        print("In docvec's vector")
+        print("This vector has %d entries" % len(i))
         print(i)
         print("\n\n\n\n\n\n")
 
@@ -191,15 +192,12 @@ for root, dirs, files in os.walk(top):
     for d in dirs:
         # Iterating companies in /cleaned_articles/
         cwd = top + "/%s" % d
-        print("CWD is %s" % cwd)
         for root, dirs, files in os.walk(cwd):
             for filename in files:
                 if filename.endswith('.txt'):
-
                     article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
                     article_name_tag = os.path.splitext(filename)[0]
                     sources[article_name_tag] = article_file_location
-                    print(article_name_tag)
                     # Then, get the files and put into sources
 
     generate_doc2vec_model(sources, article_name_tag, "en")
