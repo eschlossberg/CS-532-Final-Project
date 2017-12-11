@@ -10,7 +10,7 @@
 
 The goal of doc2vec is to create a vector representation of a document. Doc2vec utilizes word2vec model (where word is representated as a feature vector in this model) and added a small extension - another document vector. The Doc2Vec algorithm will train both word vectors and document vectors at the same time (the vectors are averaged or concatenated) to form a vector representation of the document. This document vector intends to represent the concept of this document.
 
-[Link to this document] (https://towardsdatascience.com/a-gentle-introduction-to-doc2vec-db3e8c0cce5e)
+[Link to this document](https://towardsdatascience.com/a-gentle-introduction-to-doc2vec-db3e8c0cce5e)
 
 1.	An unsupervised training algorithm – “Paragraph Vectors” algorithm – to create a numeric representation of a document
 2.	Intention: encode whole document that consist lists of grouped sentences and associate with label
