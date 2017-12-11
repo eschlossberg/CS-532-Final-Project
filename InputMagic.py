@@ -83,7 +83,7 @@ def generate_doc2vec_model(sources, name, lang_tag):
         # Logs
         # Next run alpha
         alpha_val -= alpha_delta
-    model.save(name+'-model-'+lang_tag+'.d2v')
+    model.save('model-'+lang_tag+'.d2v')
     print("Models")
     print(model.wv.vocab.keys())
 
