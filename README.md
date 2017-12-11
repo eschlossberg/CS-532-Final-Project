@@ -8,7 +8,12 @@
 
 ## [The Magic behind Doc2Vec](https://www.quora.com/How-does-doc2vec-represent-feature-vector-of-a-document-Can-anyone-explain-mathematically-how-the-process-is-done/answer/Piyush-Bhardwaj-7)
 
-The goal of doc2vec is to create a vector representation of a document. Doc2vec utilizes word2vec model (where word is representated as a feature vector in this model) and added a small extension - another document vector. The Doc2Vec algorithm will train both word vectors and document vectors at the same time (the vectors are averaged or concatenated) to form a vector representation of the document. This document vector intends to represent the concept of this document.
+The goal of doc2vec is to create a vector representation of a document. Doc2vec utilizes word2vec model (where word is represented as a feature vector in the word2vec model, this model is a 3 layer neural network, where the input is surrounding words and the model will output predicted target word) and added a small extension - another document vector. The Doc2Vec algorithm will train both word vectors and the extra document vector at the same time, and then, the vectors are averaged or concatenated to form a vector representation of the document.
+
+At the end of training, this document vector intends to represent the concept of this document. As each text example will have a vector,  the cosine-similarity between these examples are likely to be a useful measure of similarity.
+
+The purpose of using doc2vec in this project is to convert the document into vector representation, where this document vector will be used to feed our self-implemented prediction models.
+
 
 [Link to this document](https://towardsdatascience.com/a-gentle-introduction-to-doc2vec-db3e8c0cce5e)
 
