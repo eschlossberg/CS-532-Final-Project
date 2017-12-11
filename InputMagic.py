@@ -56,8 +56,8 @@ class LabeledLineSentence(object):
         return self.docs
 
     def shuffle(self):
-        sf(self.sentences)
-        return self.sentences
+        sf(self.docs)
+        return self.docs
 
 # Doc2Vec model
 def generate_doc2vec_model(sources, name, lang_tag):
@@ -66,6 +66,7 @@ def generate_doc2vec_model(sources, name, lang_tag):
     #    print(line) #Debug
     # size: 100
     # min_alpha = 0.025
+    print(len(doc.to_array()))
     model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
     model.build_vocab(doc.to_array())
 
@@ -84,6 +85,11 @@ def generate_doc2vec_model(sources, name, lang_tag):
     model.save('model-'+lang_tag+'.d2v')
     print("Models")
     print(model.wv.vocab.keys())
+    print(len(model.docvecs))
+    for i in model.docvecs:
+        print("In docvec")
+        print(i)
+        print("\n\n\n\n\n\n")
 
 ## Execution
 # Cleaning the datas
