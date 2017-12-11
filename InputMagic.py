@@ -37,16 +37,16 @@ class LabeledLineSentence(object):
     # Every line has a tag, format: {tag}_{i}
     def __iter__(self):
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as doc:
+            with utils.smart_open(prefix) as doc:
                 for i, line in enumerate(doc):
-                    yield LabeledSentence( utils.to_unicode(line).split(), [prefix + '_%s' % i])
+                    yield LabeledSentence( utils.to_unicode(line).split(), [source + '_%s' % i])
 
     def to_array(self):
         self.sentences = []
         for source, prefix in self.sources.items():
-            with utils.smart_open(source) as doc:
+            with utils.smart_open(prefix) as doc:
                 for i, line in enumerate(doc):
-                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [prefix + '_%s' % i]))
+                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [source + '_%s' % i]))
         return self.sentences
 
     def shuffle(self):
@@ -56,8 +56,8 @@ class LabeledLineSentence(object):
 # Doc2Vec model
 def generate_doc2vec_model(sources, name, lang_tag):
     doc = LabeledLineSentence(sources)
-    for line in doc:
-        print(line) #Debug
+    #for line in doc:
+    #    print(line) #Debug
     # size: 100
     # min_alpha = 0.025
     model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
@@ -73,16 +73,16 @@ def generate_doc2vec_model(sources, name, lang_tag):
         model.alpha, model.min_alpha = alpha_val, alpha_val
         model.train(doc.shuffle(),total_examples=model.corpus_count, epochs=model.iter)
         # Logs
-        print('Completed pass %i at alpha %f' % (epoch + 1, alpha_val))
         # Next run alpha
         alpha_val -= alpha_delta
     model.save(name+'-model-'+lang_tag+'.d2v')
+    print("Models")
+    print(model.most_similar("Up"))
 
 ## Execution
 # Cleaning the datas
 data = json.load(open('companies.json'))
 
-print(len(data['companies']))
 
 # Company - CleanArticles pair
 company_arr = []
@@ -111,7 +111,6 @@ except OSError:
 os.chdir(total_articles_path)
 
 for company in data['companies']:
-    print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
     ca = []
     for article in company['articles']:
         raws = re.split('[.]', article['text'])
@@ -127,7 +126,7 @@ for company in data['companies']:
                 cleanRaw = cleanRaw[1:len(cleanRaw)]
 
             sentences.append(cleanRaw.lower())
-        print(sentences)
+        #print(sentences)
         ca.append(sentences)
 
         # Save to file
@@ -177,21 +176,21 @@ os.chdir(modals_path)
 
 for root, dirs, files in os.walk(top):
     for d in dirs:
-        print("Now we are at: ")
-        print(d)
         # Iterating companies in /cleaned_articles/
-        sources = {}
-        count = 1
         cwd = top + "/%s" % d
+        print("CWD is %s" % cwd)
         for root, dirs, files in os.walk(cwd):
             for filename in files:
-                print("File: %s"%filename)
-                article_name_tag = d + "_%d" % count
-                article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
-                sources[article_file_location] = article_name_tag
-                count += 1
-        # Then, get the files and put into sources
-        generate_doc2vec_model(sources, d, "en")
+                if filename.endswith('.txt'):
+                    sources = {}
+                    article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
+                    article_name_tag = os.path.splitext(filename)[0]
+                    sources[article_name_tag] = article_file_location
+                    print(article_name_tag)
+                    # Then, get the files and put into sources
+
+                    generate_doc2vec_model(sources, article_name_tag, "en")
+
     break
 
 
