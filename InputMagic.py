@@ -56,8 +56,8 @@ class LabeledLineSentence(object):
 # Doc2Vec model
 def generate_doc2vec_model(sources, name, lang_tag):
     doc = LabeledLineSentence(sources)
-    for line in doc:
-        print(line) #Debug
+    #for line in doc:
+    #    print(line) #Debug
     # size: 100
     # min_alpha = 0.025
     model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
@@ -73,16 +73,16 @@ def generate_doc2vec_model(sources, name, lang_tag):
         model.alpha, model.min_alpha = alpha_val, alpha_val
         model.train(doc.shuffle(),total_examples=model.corpus_count, epochs=model.iter)
         # Logs
-        print('Completed pass %i at alpha %f' % (epoch + 1, alpha_val))
         # Next run alpha
         alpha_val -= alpha_delta
     model.save(name+'-model-'+lang_tag+'.d2v')
+    print("Models")
+    print(model.docvecs[0])
 
 ## Execution
 # Cleaning the datas
 data = json.load(open('companies.json'))
 
-print(len(data['companies']))
 
 # Company - CleanArticles pair
 company_arr = []
@@ -111,7 +111,6 @@ except OSError:
 os.chdir(total_articles_path)
 
 for company in data['companies']:
-    print("Company name: {}  with  {} articles".format(company['company'], len(company['articles'])))
     ca = []
     for article in company['articles']:
         raws = re.split('[.]', article['text'])
@@ -127,7 +126,7 @@ for company in data['companies']:
                 cleanRaw = cleanRaw[1:len(cleanRaw)]
 
             sentences.append(cleanRaw.lower())
-        print(sentences)
+        #print(sentences)
         ca.append(sentences)
 
         # Save to file
@@ -177,15 +176,12 @@ os.chdir(modals_path)
 
 for root, dirs, files in os.walk(top):
     for d in dirs:
-        print("Now we are at: ")
-        print(d)
         # Iterating companies in /cleaned_articles/
         sources = {}
         count = 1
         cwd = top + "/%s" % d
         for root, dirs, files in os.walk(cwd):
             for filename in files:
-                print("File: %s"%filename)
                 article_name_tag = d + "_%d" % count
                 article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
                 sources[article_file_location] = article_name_tag
