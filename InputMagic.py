@@ -38,20 +38,26 @@ class LabeledLineSentence(object):
     def __iter__(self):
         for source, prefix in self.sources.items():
             with utils.smart_open(prefix) as doc:
+                self.sentences = []
                 for i, line in enumerate(doc):
-                    yield LabeledSentence( utils.to_unicode(line).split(), [source + '_%s' % i])
+                    for tex in utils.to_unicode(line).split():
+                        self.sentences.append(tex)
+                yield LabeledSentence(self.sentences, [source])
 
     def to_array(self):
-        self.sentences = []
+        self.docs = []
         for source, prefix in self.sources.items():
             with utils.smart_open(prefix) as doc:
+                self.sentences = []
                 for i, line in enumerate(doc):
-                    self.sentences.append( LabeledSentence(utils.to_unicode(line).split(), [source + '_%s' % i]))
-        return self.sentences
+                    for tex in utils.to_unicode(line).split():
+                        self.sentences.append(tex)
+                self.docs.append(LabeledSentence(self.sentences, [source]))
+        return self.docs
 
     def shuffle(self):
-        sf(self.sentences)
-        return self.sentences
+        sf(self.docs)
+        return self.docs
 
 # Doc2Vec model
 def generate_doc2vec_model(sources, name, lang_tag):
@@ -60,6 +66,7 @@ def generate_doc2vec_model(sources, name, lang_tag):
     #    print(line) #Debug
     # size: 100
     # min_alpha = 0.025
+    print(len(doc.to_array()))
     model = d2v( size=300, window=10, min_count=1, sample=1e-4, negative=5,workers=8)
     model.build_vocab(doc.to_array())
 
@@ -75,9 +82,15 @@ def generate_doc2vec_model(sources, name, lang_tag):
         # Logs
         # Next run alpha
         alpha_val -= alpha_delta
-    model.save(name+'-model-'+lang_tag+'.d2v')
+    model.save('model-'+lang_tag+'.d2v')
     print("Models")
-    print(model.most_similar("Up"))
+    print(model.wv.vocab.keys())
+    print(len(model.docvecs))
+    for i in model.docvecs:
+        print("In docvec's vector")
+        print("This vector has %d entries" % len(i))
+        print(i)
+        print("\n\n\n\n\n\n")
 
 ## Execution
 # Cleaning the datas
@@ -143,7 +156,7 @@ for company in data['companies']:
         f = open("./{}/{}_{}.txt".format(path,path, article['date']), "w+")
         for s in sentences:
             f.write(s)
-            f.write("\n")
+            f.write(" ")
         f.close()
 
     # Debug: Make a memory copy of all collections
@@ -175,21 +188,19 @@ os.chdir(modals_path)
 ## get articles and put into doc2vec
 
 for root, dirs, files in os.walk(top):
+    sources = {}
     for d in dirs:
         # Iterating companies in /cleaned_articles/
         cwd = top + "/%s" % d
-        print("CWD is %s" % cwd)
         for root, dirs, files in os.walk(cwd):
             for filename in files:
                 if filename.endswith('.txt'):
-                    sources = {}
                     article_file_location = "../{}/{}/{}".format(total_articles_path,d,filename)
                     article_name_tag = os.path.splitext(filename)[0]
                     sources[article_name_tag] = article_file_location
-                    print(article_name_tag)
                     # Then, get the files and put into sources
 
-                    generate_doc2vec_model(sources, article_name_tag, "en")
+    generate_doc2vec_model(sources, article_name_tag, "en")
 
     break
 
