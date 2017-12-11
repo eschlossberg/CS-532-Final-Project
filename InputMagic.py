@@ -40,7 +40,8 @@ class LabeledLineSentence(object):
             with utils.smart_open(prefix) as doc:
                 self.sentences = []
                 for i, line in enumerate(doc):
-                    self.sentences.append(utils.to_unicode(line).split())
+                    for tex in utils.to_unicode(line).split():
+                        self.sentences.append(tex)
                 yield LabeledSentence(self.sentences, [source])
 
     def to_array(self):
@@ -49,12 +50,9 @@ class LabeledLineSentence(object):
             with utils.smart_open(prefix) as doc:
                 self.sentences = []
                 for i, line in enumerate(doc):
-                    print(line)
-                    self.sentences.append(utils.to_unicode(line).split())
+                    for tex in utils.to_unicode(line).split():
+                        self.sentences.append(tex)
                 self.docs.append(LabeledSentence(self.sentences, [source]))
-
-        for i in self.docs:
-            print(i)
         return self.docs
 
     def shuffle(self):
