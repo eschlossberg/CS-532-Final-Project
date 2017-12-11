@@ -18,7 +18,6 @@ import re
 
 # For directory
 import os
-from os.path import basename
 
 # Copied code, for testing
 class LabeledLineSentence(object):
@@ -78,7 +77,7 @@ def generate_doc2vec_model(sources, name, lang_tag):
         alpha_val -= alpha_delta
     model.save(name+'-model-'+lang_tag+'.d2v')
     print("Models")
-    print(model.docvecs[0])
+    print(model.most_similar("Up"))
 
 ## Execution
 # Cleaning the datas
