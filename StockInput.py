@@ -1,5 +1,5 @@
 # numpy
-import numpy
+import numpy as np
 
 # random
 from random import shuffle as sf
@@ -18,6 +18,12 @@ top = os.getcwd()+'/Data'
 etf = top + '/ETFs'
 stocks = top + '/Stocks'
 
+## All of the stock data stored in the following format:
+## {file_name (without .txt) : (data) }
+
+etf_source = {}
+stock_source = {}
+
 for root, dirs, files in os.walk(top):
     for d in dirs:
         print("Now we are at: ")
@@ -26,13 +32,36 @@ for root, dirs, files in os.walk(top):
         sources = {}
         count = 1
         cwd = top + "/%s" % d
-        for root, dirs, files in os.walk(cwd):
-            for filename in files:
-                print("File: %s"%filename)
-                article_name_tag = d + "_%d" % count
-                sources[filename] = article_name_tag
-                count += 1
+        if (d == "Stocks"):
+            for root, dirs, files in os.walk(cwd):
+                for filename in files:
+                    print("We're in stocks")
+                    if filename.endswith('.txt'):
+                        article_name_tag = os.path.splitext(filename)[0]
+                        print(article_name_tag)
+                        ## Date, Open, High, Low, Close, Volume, OpenInt
+                        fpath = top + "/" + d + "/"+filename
+                        if os.path.getsize(fpath) <= 0:
+                            continue
+                        npdata = np.genfromtxt("./Data/{}/{}".format(d,filename), skip_header=1, delimiter=',', dtype=['U10',float,float,float,float,int,int])
+                        #npdata = np.loadtxt("./Data/{}/{}".format(d,filename), skiprows=1, delimiter=',')
+                        stock_source[article_name_tag] = npdata
 
-        print("Collected sources: ")
-        print(sources)
+        elif (d == "ETFs"):
+                for root, dirs, files in os.walk(cwd):
+                    for filename in files:
+                        print("We're in ETFs")
+                        if filename.endswith('.txt'):
+                            article_name_tag = os.path.splitext(filename)[0]
+                            print(article_name_tag)
+                            ## Date, Open, High, Low, Close, Volume, OpenInt
+                            fpath = top + "/" + d + "/"+filename
+                            if os.path.getsize(fpath) <= 0:
+                                continue
+                            npdata = np.genfromtxt("./Data/{}/{}".format(d,filename), skip_header=1, delimiter=',', dtype=['U10',float,float,float,float,int,int])
+                            #npdata = np.loadtxt("./Data/{}/{}".format(d,filename), skiprows=1, delimiter=',')
+                            etf_source[article_name_tag] = npdata
     break
+
+print(stock_source)
+print(etf_source)
