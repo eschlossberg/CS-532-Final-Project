@@ -1,14 +1,11 @@
-using StatsBase
-
+@everywhere using StatsBase
+import StatsBase.predict
 function pegasos(supports::Array{Float64},y::Array{Float64} ,lamb::Float64, max_iter::Int64, kernel)
 	alpha = SharedArray{Float64}(size(supports,1))
-	alpha[:] = 0
-	@parallel for K = 1:max_iter
+	alpha[:] = 0.0
+	@sync @parallel for K = 1:max_iter
 		#support vector to increment by
 		idx = sample(collect(1:size(supports,1)))
-		new_alpha = zeros(size(supports,1))
-		filter_idxs = filter( x-> x != idx,collect(1:size(alpha,1)))
-		new_alpha[filter_idxs] = alpha[filter_idxs]
 		#handle the idx case
 		test_val = y[idx]*((lamb*K)^(-1))
 		sum_part = 0
@@ -17,11 +14,10 @@ function pegasos(supports::Array{Float64},y::Array{Float64} ,lamb::Float64, max_
 		end
 		test_val *= sum_part
 		if test_val < 1
-			new_alpha[idx] = alpha[idx] + 1
+			alpha[idx] = alpha[idx] + 1
 		else
-			new_alpha[idx] = alpha[idx]
+			alpha[idx] = alpha[idx]
 		end
-		alpha = new_alpha
 	end
 	return Array(alpha)
 end
@@ -41,7 +37,7 @@ function pegasos(supports::Array{Float64}, y::Array{Float64}, lamb::Float64, T::
 	return w
 end
 
-function predict(alpha::Array{Float64}, kernel, x::Array{Float64}, supports::Array{Float64}, y::Array{Float64})
+@everywhere function predict(alpha::Array{Float64}, kernel, x::Array{Float64}, supports::Array{Float64}, y::Array{Float64})
 	pred_sub = SharedArray{Float64}(size(supports,1))
 	pred_sub[:] = 0
 	to_check = filter(x-> alpha[x] != 0, 1:size(alpha,1))
