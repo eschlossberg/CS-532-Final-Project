@@ -1,0 +1,88 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2017
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2017}
+
+\usepackage{nips_2017}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2017}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\title{Data Preprocessing}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Shi Ji Chew\thanks
+  CS 532 Fall 2017\\
+  Department of Computer Science\\
+  University of Wisconsin-Madison\\
+  Madison, WI 53703 \\
+  \texttt{schew2@wisc.edu} \\
+  %% examples of more authors
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\section{Data Preprocessing}
+
+To ensure better outcome for our training model, the raw datasets are preprocessed.
+
+\subsection{Removing symbols in mathematical data}
+In the dataset we chose as inputs to our learning model, the data are in text format. There are currency symbols in some column entries. In order to feed these data into our learning model, we chose \emph{Pandas} to parse the text file and remove the currency symbols with \emph{regex}. The column entries that were processed were then converted into float data type.
+
+\subsection{Missing entries computation}
+Even though the dataset provides a rich information about the stock market, there are some blanks in some entries and \emph{Pandas} marked these missing values as \emph{NaN} values. With Imputer, we replaced the NaN values by computing the mean values.
+
+\subsection{Categorizing companies label}
+Although this is not a compulsory step, but converting companies label to numerical labels through \emph{LabelEncoder} can ease us in feeding the matrix to learning model later.
+
+\subsection{Feature scaling}
+
+We noticed that there are some large variances between each features. To ensure better results, We chose \emph{StandardScaler} to standardize our features by scaling these raw data entries into unit variance form.
+
+\end{document}
