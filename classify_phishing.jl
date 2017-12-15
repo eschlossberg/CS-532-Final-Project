@@ -47,14 +47,37 @@ function main()
     preds_tik = sign.(Γ*w_tik)
     @printf "Thikonov: %f \n" error_rate(preds_tik, ω)
     #train some SVMS
-    α = pegasos(X,y, λ, 500,RBF)
-    preds_svm = Array{Float64}(size(Γ, 1))
-    for i in 1:size(Γ,1)
-        preds_svm[i] = predict(α, RBF, Γ[i,:], X, y)
+    Λ = [1/2^i for i in 1:10]
+    append!(Λ, [2^i for i in 1:5])
+    min_err = Inf
+    ϕ = zeros(size(X,1))
+    for λ in Λ
+        α = pegasos(X,y, λ, 5000,RBF)
+        preds_svm = Array{Float64}(size(X, 1))
+        for i in 1:size(X,1)
+            preds_svm[i] = predict(α, RBF, X[i,:], X, y)
+        end
+        err_sub = Inf
+        try
+            err_sub = error_rate(preds_svm, y)
+        catch
+            err_sub = Inf
+        end
+        if err_sub < min_err
+            min_err = err_sub
+            ϕ = α
+        end
+    end
+    println("Done training")
+    #build the final preds
+    preds_svm = zeros(size(Γ, 1),1)
+    for i in 1:size(Γ, 1)
+        preds_svm[i] = predict(ϕ, RBF, Γ[i,:], X, y)
     end
     @printf "Kernel SVM: %f \n" error_rate(preds_svm, ω)
+
     #finally the regular SVM
-    w_hat = pegasos(X,y , λ, 900)
+    w_hat = pegasos(X,y , λ, 5000)
     @printf "SVM: %f \n" error_rate(sign.(Γ*w_hat), ω)
 
 

@@ -1,5 +1,13 @@
 using DataFrames
+import Base.sign
 include("pegasos.jl")
+function sign(x::Bool)
+    if x
+        return 1.0
+    else
+        return -1.0
+    end
+end
 
 function error_rate(test::Array{Float64}, real::Array{Float64})
     trials = size(test,1)
@@ -15,24 +23,29 @@ function error_rate(test::Array{Float64}, real::Array{Float64})
     return ninc/trials
 end
 @everywhere function RBF(x::Array{Float64}, y::Array{Float64})
-    ret = exp(-norm(x - y)*.02)
-    if(ret == 0)
-        throw(ErrorException("kernel is zero"))
-    end
-    return ret
+    return exp(-norm(x - y)*.0002)
 end
 
 @everywhere function polynomial(x::Array{Float64}, y::Array{Float64})
-	return (dot(x,y) + 1)^3
+	return (dot(x,y) + 1)^2
 end
 
+@everywhere function histogram_intersection(x::Array{Float64}, y::Array{Float64})
+    return sum(min.(x,y))
+end
+
+@everywhere function hyper_tangent(x::Array{Float64}, y::Array{Float64})
+    return tanh(3*dot(x,y) +1)
+end
 function main()
+    kernel = RBF
+    println("############## BEGIN TEST ##############")
     data = readtable("dow_jones_index.data")
 
     train_indices = filter(x -> data[x,:quarter] == 1, 1:750)
     test_indices = filter(x-> data[x, :quarter] == 2, 1:750)
 
-    feature_vecs = [:open,:high,:low,:close, :volume, :percent_change_price, :percent_change_volume_over_last_wk, :previous_weeks_volume]
+    feature_vecs = [:open,:high,:low,:close, :volume, :percent_change_price, :percent_change_volume_over_last_wk, :previous_weeks_volume, :next_weeks_open]
     for symb in feature_vecs
         data[isna.(data[symb]), symb] = 0
     end
@@ -40,10 +53,13 @@ function main()
     data[:previous_weeks_volume] = log.(data[:previous_weeks_volume]+1)
     test_label = :percent_change_next_weeks_price
     X = Array{Float64}(data[train_indices,feature_vecs])
-    y  = sign.(Array{Float64}(data[train_indices, test_label ]))
+    train_data = data[train_indices,:]
+    y  = Array{Float64}(sign.(train_data[:percent_return_next_dividend] .> 1))
     #maybe add in secondary model for next dividend payout
     X_test = Array{Float64}(data[test_indices, feature_vecs])
-    y_test = sign.(Array(data[test_indices, test_label]))
+    test_data = data[test_indices,:]
+    y_test = Array{Float64}(sign.(test_data[:percent_return_next_dividend] .> 1))
+
     λ_1 = 0.05
     #build the model
     w_tik = (X'*X + λ_1*eye(size(X,2)))^(-1)*X'*y
@@ -51,15 +67,15 @@ function main()
     @printf "Tikhonov error rate: %f \n" error_rate(preds, y_test)
     println("training an SVM")
 
-    λs = [1/2^i for i in 1:5 ]
+    λs = [1/2^i for i in 1:10 ]
     append!(λs, [2^i for i in 1:5])
     α_best = Array{Float64}(size(X,1))
     min_err = Inf
     for λ in λs
-        alpha = pegasos(X,y, λ, 1200,RBF)
+        alpha = pegasos(X,y, λ, 4000,kernel)
         preds_self = Array{Float64}(size(X,1))
         for i in 1:size(X,1)
-            preds_self[i] = predict(alpha, RBF, X[i,:], X,y)
+            preds_self[i] = predict(alpha, kernel, X[i,:], X,y)
         end
         err_rate = error_rate(preds_self,y)
         if err_rate < min_err
@@ -71,6 +87,7 @@ function main()
     for i in 1:size(X_test,1)
         preds_svm[i] = predict(α_best, polynomial, X_test[i,:], X, y)
     end
+    println(filter(i -> preds_svm[i] != -1, 1:size(preds_svm,1)))
     @printf "Error on kernel SVM: %f \n" error_rate(preds_svm, y_test)
     what = pegasos(X, y, λ_1, 1500)
     @printf "Error on SVM: %f \n" error_rate(sign.(X_test*what), y_test)
