@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 \documentclass{article}
 
 % if you need to pass options to natbib, use, e.g.:
@@ -73,7 +74,8 @@
 To ensure better outcome for our training model, the raw datasets are preprocessed.
 
 \subsection{Removing symbols in mathematical data}
-In the dataset we chose as inputs to our learning model, the data are in text format. There are currency symbols in some column entries. In order to feed these data into our learning model, we chose \emph{Pandas} to parse the text file and remove the currency symbols with \emph{regex}. The column entries that were processed were then converted into float data type.
+
+In the dataset we chose as inputs to our learning model, the data are in text format. There are also currency symbols in some column entries. In order to feed these data into our learning model, we chose \emph{Pandas} to parse the text file and remove the currency symbols with \emph{regex}. The column entries that were processed were then converted into float data type.
 
 \subsection{Missing entries computation}
 Even though the dataset provides a rich information about the stock market, there are some blanks in some entries and \emph{Pandas} marked these missing values as \emph{NaN} values. With Imputer, we replaced the NaN values by computing the mean values.
