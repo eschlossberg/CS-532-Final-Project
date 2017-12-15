@@ -1,5 +1,251 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2017
+%
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2017}
+
+\usepackage{nips_2017}
+\usepackage{listings}
+\usepackage{bbm}
+\usepackage{bm}
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2017}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\title{CS 532 Final Project}
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Shi Ji Chew\thanks
+  CS 532 Fall 2017\\
+  Department of Computer Science\\
+  University of Wisconsin-Madison\\
+  Madison, WI 53703 \\
+  \texttt{schew2@wisc.edu} \\
+  \AND 
+  Josh McGrath\thanks
+  CS 532 Fall 2017\\
+  Department of Computer Science\\
+  University of Wisconsin-Madison\\
+  Madison, WI 53703\\
+  \texttt{jmcgrath4@wisc.edu} \\
+  \AND 
+  Eli Schlossberg\thanks
+  CS 532 Fall 2017\\
+  Department of Computer Science\\
+  University of Wisconsin-Madison\\
+  Madison, WI 53703\\
+  \texttt{schlossberg2@wisc.edu}
+  %% examples of more authors
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \AND
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
 \begin{document}
-(Type your content here.)
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\section{Data Preprocessing}
+
+To ensure better outcome for our training model, the raw datasets are preprocessed.
+
+\subsection{Removing symbols in mathematical data}
+
+In the dataset we chose as inputs to our learning model, the data are in text format. There are also currency symbols in some column entries. In order to feed these data into our learning model, we chose \emph{Pandas} to parse the text file and remove the currency symbols with \emph{regex}. The column entries that were processed were then converted into float data type.
+
+\subsection{Missing entries computation}
+Even though the dataset provides a rich information about the stock market, there are some blanks in some entries and \emph{Pandas} marked these missing values as \emph{NaN} values. With Imputer, we replaced the NaN values by computing the mean values.
+
+\subsection{Categorizing companies label}
+Although this is not a compulsory step, but converting companies label to numerical labels through \emph{LabelEncoder} can ease us in feeding the matrix to learning model later.
+
+\subsection{Feature scaling}
+
+We noticed that there are some large variances between each features. To ensure better results, We chose \emph{StandardScaler} to standardize our features by scaling these raw data entries into unit variance form.
+
+
+\section{Pegasos Method}
+\subsection{Standard Pegasos Analysis}
+The pseudocode for the Mini-Batch Pegasos algorithm can be viewed in figure 1. The algorithm implemented by
+Shalev-Shwartz et al. [Pegasos Paper] is the special case of this algorithm where $k=1$. However, their
+analysis, and the analysis being covered in this report, is that of the general case. Before anything,
+we note that the algorithm presented in figure 1 yields an $\epsilon$-accurate solution after
+$\tilde{O}(n/(\lambda \epsilon))$ iterations. We first present some results, the proofs of which can be found in [Pegasos Paper].
+
+\begin{figure}[h]
+	\centering
+    \begin{lstlisting}[frame=single, mathescape=true]
+    INPUT: $S,\lambda,T,k$
+    INITIALIZE: Set $w_1=0$
+    FOR $t=1,2,\dots,T$
+    	Choose $A_t\subseteq [m]$, where $|A_t|=k$, uniformly at random
+        Set $A_t^+=\{i\in A_t: y_i<w_t,X_i><1\}$
+        Set $\eta_t=\frac{1}{\lambda_t}$
+        Set $\bm{w}_{t+1}\leftarrow(1-\eta_t\lambda)\bm{w}_t+\frac{\eta_t}{k}\sum_{i\in A^+_t}y_i\bm{x}_i$
+        
+        [Optional: $\bm{w}_{t+1}\leftarrow$ min$\left\{1,\frac{1/\sqrt{\lambda}}{||\bm{w_{t+1}}||}\right\}\bm{w}_{t+1}$ ] //Projection Step
+    \end{lstlisting}
+    %\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+    \caption{Mini-Batch Pegasos Pseudocode}
+\end{figure}
+
+
+The first lemma is used to show the convergence of a series of functions to a local minimum of a convex
+space.
+Note, a function $f$ is called $\lambda$-strongly convex if $f(\mathbf{w})-\frac{\lambda}{2}||\mathbf{w}||^2$
+is a convex function.
+
+\textbf{Lemma 1} Let $f_1,\dots,f_T$ be a sequence of $\lambda$-strongly convex functions. Let $B$ be a closed
+convex set and define $\Pi_B(\mathbf{w})=argmin_{\mathbf{w'}}||\mathbf{w}-\mathbf{w}'||$. Let
+$\mathbf{w}_1,\dots,\mathbf{w}_{T+1}$ be a sequence of vectors such that $\mathbf{w}_1\in B$ and
+for $t\geq 1$, $\mathbf{w}_{t+1}=\Pi_B(\mathbf{w}_t-\eta_t\nabla_t)$, where $\nabla_t$ belongs
+to the sub-gradient set of $f_t$ at $\mathbf{w}_t$ and $\eta_t=1/(\lambda t)$. Assume that for all $t$,
+$||\nabla_t||\leq G$. Then for all $\mathbf{u}\in B$ we have
+$$\frac{1}{T}\sum_{t=1}^Tf_t(\mathbf{w}_t)\leq \frac{1}{T}\sum_{t=1}^Tf_t(\mathbf{u})+\frac{G^2(1+ln(T))}{2\lambda T}.$$
+
+Applying the lemma to the special case that represents the mini-batch Pegasos algorithm, we obtain the
+following result, proving that the algorithm converges to the local minimum.
+
+\textbf{Theorem 1} Assume that for all $(\mathbf{x},y)\in S$ the norm of $\mathbf{x}$ is at most $R$. Let
+$\mathbf{w}^*=argmin_{\mathbf{w}}f(\mathbf{w})$ and let $c=(\sqrt{\lambda}+R)^2$ whenever we perform the
+projection step and $c=4R^2$ whenever we do not perform the projection step. Then for $T\geq 3$,
+$$\frac{1}{T}\sum_{t=1}^Tf(\mathbf{w}_t;A_t)\leq \frac{1}{T}\sum_{t=1}^Tf(\mathbf{w}^*;A_t)+\frac{c(1+ln(T))}{2\lambda T}.$$
+
+The following corollary yields a proof of convergence in the special case where $k=m$, i.e.
+the whole training data set is used in each mini-batch. As such, the algorithm is completely deterministic.
+
+\textbf{Corollary 1} Assume that the conditions stated in Thm. 1 and that $A_t=S$ for all $t$. Let
+$\overline{\mathbf{w}}=\frac{1}{T}\sum_{t=1}^T\mathbf{w}_t$. Then,
+$$f(\overline{\mathbf{w}}\leq f(\mathbf{w}^*)+\frac{c(1+ln(T))}{2\lambda T}.$$
+
+The next three results are used for when $k<m$, and prove results about convergence under stochastic
+conditions.
+
+
+\textbf{Lemma 2} Assume that the conditions stated in Thm. 1 hold and that for all $t$, each element in $A_t$ is sampled uniformly at random from $S$ (with or without repetitions). Assume also that $R\geq 1$ and $\lambda \leq 1/4$. Then, with a probability of at least $1-\delta$ we have
+$$\frac{1}{T}\sum_{t=1}^{T}f(\mathbf{w}_t)-f(\mathbf{w}^*\leq \frac{21c\ ln(T/\delta)}{\lambda T}.$$
+
+\textbf{Corollary 2} Assume that the conditions stated in Lemma 2 hold and let $\overline{\mathbf{w}}=\frac{1}{T}\sum_{t=1}^T\mathbf{w}_t$. Then, with probability of at least $1-\delta$ we have
+$$f(\overline{\mathbf{w}})\leq f(\mathbf{w}^*)+\frac{21c\ ln(T/\delta)}{\lambda T}.$$
+
+The preceding lemma and corollary can be applied to yield a very important result, namely that half
+of the randomly chosen hypotheses are valid.
+
+\textbf{Lemma 3} Assume that the conditions stated in Lemma 2 hold. Then, if $t$ is selected at random
+from $[T]$, we have with a probability of at least $\frac{1}{2}$ that
+$$f(\mathbf{w}_t)\leq f(\mathbf{w}^*)+\frac{42c\ ln(T/\delta)}{\lambda T}.$$
+
+The result of this lemma, as stated in [Pegasos paper], is that if the algorithm were to terminate at a
+random iteration, then in at least half of the cases the final hypothesis would be an accurate solution.
+Moreover, on average after two attempts we are likely to find a good solution. Shalev-Shwartz et al. suggest
+stopping at a random iteration and evaluating the error of the last hypothesis.
+
+\subsection{Kernelized Pegasos Analysis}
+One of the main advantages of using an SVM as a classifier is that they can be trained with kernels
+instead of using feature data directly. This result is derivative from the Representer Theorem. In simple
+English, the Representer Theorem states that any minimizing function on our loss space can be represented as a
+finite linear combination of kernel products evaluated on the training data set [Wikipedia]. As such,
+the minimization problem becomes
+$${min}_{\mathbf{w}}\frac{\lambda}{2}||\mathbf{w}||^2+\frac{1}{m}\sum_{(\mathbf{x},y)\in S} \ell(\mathbf{w}:(\phi(\mathbf{x}),y)),$$
+where
+$$\ell(\mathbf{w};(\phi(\mathbf{x},y))=\max\{0,1-y\left<\mathbf{w},\phi(\mathbf{x})\right>\},$$
+and $\phi(\cdot)$ is some implicit mapping such that 
+$K(\mathbf{x},\mathbf{x}')=\left<\phi(\mathbf{x}),\phi(\mathbf{x}')\right>$, where $K$ is some operator
+on the kernel of the input data set. The main result of this new minimization problem is that we now
+are capable of developing an equivalent algorithm to the previously described algorithm which operates
+on the kernel of the input data set rather than the whole data set. The pseudocode for this algorithm
+can be viewed in figure 2.
+
+\begin{figure}[h]
+	\centering
+    \begin{lstlisting}[frame=single, mathescape=true]
+    INPUT: $S,\lambda,T,k$
+    INITIALIZE: Set $\bm{\alpha}_1=0$
+    FOR $t=1,2,\dots,T$
+    	Choose $i_t\in\{0,\dots,|S|\}$ uniformly at random.
+        For all $j\neq i_t$, set $\alpha_{t+1}[j]=\alpha_t[j]$
+        If $y_{i_t}\frac{1}{\lambda t}\sum_j\alpha_t[j]y_{i_t}K(\bm{x}_{i_t},\bm{x}_j)<1$, then:
+        	Set $\alpha_{t+1}[i_t]=\alpha_t[i_t]+1$
+        Else:
+        	Set $\alpha_{t+1}[i_t]=\alpha_t[i_t]$
+    OUTPUT:$\bm{\alpha}_{T+1}$
+    \end{lstlisting}
+    %\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+    \caption{The Kernelized Pegasos Algorithm}
+\end{figure}
+We now prove that this implementation of Pegasos is valid.
+From the proof of Thm. 1 (excluded, ref. [Pegasos Paper]), for all $t$, we can write
+$\mathbf{w}_{t+1}$ as
+$$\mathbf{w}_{t+1}=\frac{1}{\lambda t}\sum_{i=1}^t\mathbbm{1}[y_{i_t},\left<\mathbf{w}_t,\phi(\mathbf{x}_j)\right><1]y_{i_t}\phi(\mathbf{x}_{i_t}),$$
+where $\mathbbm{1}[y\left<\mathbf{w}_t,\phi(\mathbf{x}_j)\right><1]$ is the indicator function
+which takes a value of one if its argument is true, and zero otherwise. For each $t$, let
+$\mathbf{\alpha}_{t+1}\in \mathbb{R}^m$ be the vector such that $\alpha_{t+1}[j]$ counts how many times
+example $j$ has been selected so far and we had non-zero loss on it, namely,
+$$\alpha_{t+1}[j]=|\{t'\leq t : i_{t'}=j\land y_j\left<\mathbf{w}_{t'},\phi(\mathbf{x}_j)\right><1\}|.$$
+Thus, instead of keeping in memory the weight vector $\mathbf{w}_{t+1}$, we will represent $\mathbf{w}_{t+1}$,
+using $\mathbf{\alpha}_{t+1}$ according to
+$$\mathbf{w}_{t+1}=\frac{1}{\lambda t}\sum_{j=1}^m\alpha_{t+1}[j]y_j\phi(\mathbf{x}_j).$$
+From this equation it is easy to modify the original Pegasos algorithm to obtain the pseudocode in figure 2.
+
+The value of $\mathbf{w}_t$ in this algorithm is the same as in the original algorithm. Thus the guarantee
+of an $\epsilon$-accurate solution after $\tilde{O}(1/(\lambda \epsilon))$ iterations remains valid.
+Despite this, the time required for checking non-zero loss at iteration $t$ requires as many as min$(t,m)$
+kernel evaluations. Thus the overall runtime is $\tilde{O}(m/(\lambda \epsilon))$.
+\section{Pegasos Implementation}
+
+Our implemtation of pegasos and kernelized pegasos were written in Julia. We did not include the optional projection step
+
+1. In julia
+
+2. Parallel (including why Pegasos makes it easy to do that)
+3. Mention that we did both kernelized pegasos and the original Pegasos
+
+
+
+\section{Testing}
+
+
+\section{Results}
+1. mention both speed and accuracy
+
+\section{Conclusion}
 \end{document}
