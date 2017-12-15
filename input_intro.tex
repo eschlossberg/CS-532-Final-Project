@@ -89,7 +89,79 @@ We noticed that there are some large variances between each features. To ensure 
 
 
 \section{Pegasos Method}
+\subsection{Initial Analysis}
+The pseudocode for the Mini-Batch Pegasos algorithm can be viewed in figure 1. The algorithm implemented by
+Shalev-Shwartz et. al. [Pegasos Paper] is the special case of this algorithm where $k=1$. However, their
+analysis, and the analysis being covered in this report, is that of the general case. We first present some
+results, the details of which can be explored in [Pegasos Paper].
 
+\begin{figure}[h]
+	\centering
+    \begin{lstlisting}[frame=single, mathescape=true]
+    INPUT: $S,\lambda,T,k$
+    INITIALIZE: Set $w_1=0$
+    FOR $t=1,2,\dots,T$
+    	Choose $A_t\subseteq [m]$, where $|A_t|=k$, uniformly at random
+        Set $A_t^+=\{i\in A_t: y_i<w_t,X_i><1\}$
+        Set $\eta_t=\frac{1}{\lambda_t}$
+        Set $\mathbf{w}_{t+1}\leftarrow(1-\eta_t\lambda)\mathbf{w}_t+\frac{\eta_t}{k}\sum_{i\in A^+_t}y_i\mathbf{x}_i$
+        
+        [Optional: $\mathbf{w}_{t+1}\leftarrow$ min$\left\{1,\frac{1/\sqrt{\lambda}}{||\mathbf{w_{t+1}}||}\right\}\mathbf{w}_{t+1}$ ] //Projection Step
+    \end{lstlisting}
+    %\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
+    \caption{Mini-Batch Pegasos Pseudocode}
+\end{figure}
+
+
+The first lemma is used to show the convergence of a series of functions to a local minimum of a convex
+space.
+Note, a function $f$ is called $\lambda$-strongly convex if $f(\mathbf{w})-\frac{\lambda}{2}||\mathbf{w}||^2$
+is a convex function.
+
+%TODO define some stuff my man. $S$
+\textbf{Lemma 1} Let $f_1,\dots,f_T$ be a sequence of $\lambda$-strongly convex functions. Let $B$ be a closed
+convex set and define $\Pi_B(\mathbf{w})=argmin_{\mathbf{w'}}||\mathbf{w}-\mathbf{w}'||$. Let
+$\mathbf{w}_1,\dots,\mathbf{w}_{T+1}$ be a sequence of vectors such that $\mathbf{w}_1\in B$ and
+for $t\geq 1$, $\mathbf{w}_{t+1}=\Pi_B(\mathbf{w}_t-\eta_t\nabla_t)$, where $\nabla_t$ belongs
+to the sub-gradient set of $f_t$ at $\mathbf{w}_t$ and $\eta_t=1/(\lambda t)$. Assume that for all $t$,
+$||\nabla_t||\leq G$. Then for all $\mathbf{u}\in B$ we have
+$$\frac{1}{T}\sum_{t=1}^Tf_t(\mathbf{w}_t)\leq \frac{1}{T}\sum_{t=1}^Tf_t(\mathbf{u})+\frac{G^2(1+ln(T))}{2\lambda T}.$$
+
+Applying the lemma to the special case that is the mini-batch Pegasos algorithm, we obtain the following
+result, proving that the algorithm converges.
+
+\textbf{Theorem 1} Assume that for all $(\mathbf{x},y)\in S$ the norm of $\mathbf{x}$ is at most $R$. Let
+$\mathbf{w}^*=argmin_{\mathbf{w}}f(\mathbf{w})$ and let $c=(\sqrt{\lambda}+R)^2$ whenever we perform the
+projection step and $c=4R^2$ whenever we do not perform the projection step. Then for $T\geq 3$,
+$$\frac{1}{T}\sum_{t=1}^Tf(\mathbf{w}_t;A_t)\leq \frac{1}{T}\sum_{t=1}^Tf(\mathbf{w}^*;A_t)+\frac{c(1+ln(T))}{2\lambda T}.$$
+
+The following corollary yields a convergence analysis in the special case where $k=m$, i.e.
+the whole set is used in each mini-batch. As such, the algorithm is completely deterministic.
+
+\textbf{Corollary 1} Assume that the conditions stated in Thm. 1 and that $A_t=S$ for all $t$. Let
+$\overline{\mathbf{w}}=\frac{1}{T}\sum_{t=1}^T\mathbf{w}_t$. Then,
+$$f(\overline{\mathbf{w}}\leq f(\mathbf{w}^*)+\frac{c(1+ln(T))}{2\lambda T}.$$
+
+\textbf{Lemma 2} Assume that the conditions stated in Thm. 1 hold and that for all $t$, each element in $A_t$ is sampled uniformly at random from $S$ (with or without repetitions). Assume also that $R\geq 1$ and $\lambda \leq 1/4$. Then, with a probability of at least $1-\delta$ we have
+$$\frac{1}{T}\sum_{t=1}^{T}f(\mathbf{w}_t)-f(\mathbf{w}^*\leq \frac{21c\ ln(T/\delta)}{\lambda T}.$$
+
+\textbf{Corollary 2} Assume that the conditions stated in Lemma 2 hold and let $\overline{\mathbf{w}}=\frac{1}{T}\sum_{t=1}^T\mathbf{w}_t$. Then, with probability of at least $1-\delta$ we have
+$$f(\overline{\mathbf{w}})\leq f(\mathbf{w}^*)+\frac{21c\ ln(T/\delta)}{\lambda T}.$$
+
+The preceding lemma and corollary can be applied to yield a very important result, namely that half
+of the randomly chosen hypotheses are valid.
+
+\textbf{Lemma 3} Assume that the conditions stated in Lemma 2 hold. Then, if $t$ is selected at random
+from $[T]$, we have with a probability of at least $\frac{1}{2}$ that
+$$f(\mathbf{w}_t)\leq f(\mathbf{w}^*)+\frac{42c\ ln(T/\delta)}{\lambda T}.$$
+
+The result of this lemma, as stated in [Pegasos paper], is that if the algorithm were to terminate at a
+random iteration, then in at least half of the cases the final hypothesis would be an accurate solution.
+Moreover, on average after two attempts we are likely to find a good solution.
+
+\subsection{Mercer Kernel Analysis}
+
+\subsection{Reasons for choosing Pegasos (rephrase)}
 \section{Pegasos Implementation}
 
 Our implemtation of pegasos and kernelized pegasos were written in Julia. We did non include the optional projection step
